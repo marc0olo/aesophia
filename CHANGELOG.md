@@ -11,6 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Option.force_msg`
 - Loading namespaces into the current scope (e.g. `using Pair`)
 - Assign patterns to variables (e.g. `let x::(t = y::_) = [1, 2, 3, 4]` where `t == [2, 3, 4]`)
+- Patterns guards
+  ```
+  switch(x)
+    a::[] | a > 10 => 1
+    _              => 2
+  ```
+  ```
+  function
+    f(a::[]) | a > 10 = 1
+    f(_)              = 2
+  ```
 ### Changed
 ### Removed
 
