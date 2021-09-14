@@ -367,7 +367,12 @@ lookup_env(Env, Kind, Ann, Name) ->
             Names = [ Qual ++ [lists:last(Name)] || Qual <- possible_scopes(Env, Name) ],
             case [ Res || QName <- Names, Res <- [lookup_env1(Env, Kind, Ann, QName)], Res /= false] of
                 []    -> false;
-                [Res] -> Res;
+                [Res = {_, {AnnR, _}}] ->
+                    case aeso_syntax:get_ann(file, AnnR, no_file) of
+                        no_file -> false;
+                        File    -> used_include(File)
+                    end,
+                    Res;
                 Many  ->
                     type_error({ambiguous_name, [{qid, A, Q} || {Q, {A, _}} <- Many]}),
                     false
@@ -800,7 +805,9 @@ infer(Contracts, Options) ->
         create_type_errors(),
         Contracts1 = identify_main_contract(Contracts, Options),
         destroy_and_report_type_errors(Env),
+        create_unused_includes(),
         {Env1, Decls} = infer1(Env, Contracts1, [], Options),
+        destroy_and_report_unused_includes(),
         {Env2, DeclsFolded, DeclsUnfolded} =
             case proplists:get_value(dont_unfold, Options, false) of
                 true  -> {Env1, Decls, Decls};
@@ -837,6 +844,10 @@ infer1(Env, [{Contract, Ann, ConName, Code} | Rest], Acc, Options)
     Env3 = bind_contract(Contract1, Env2),
     infer1(Env3, Rest, [Contract1 | Acc], Options);
 infer1(Env, [{namespace, Ann, Name, Code} | Rest], Acc, Options) ->
+    case aeso_syntax:get_ann(file, Ann, no_file) of
+        no_file -> false;
+        File -> unused_include(File)
+    end,
     check_scope_name_clash(Env, namespace, Name),
     {Env1, Code1} = infer_contract_top(push_scope(namespace, Name, Env), namespace, Code, Options),
     Namespace1 = {namespace, Ann, Name, Code1},
@@ -1973,6 +1984,10 @@ ets_insert(Name, Object) ->
     TabId = ets_tabid(Name),
     ets:insert(TabId, Object).
 
+ets_delete(Name, Key) ->
+    TabId = ets_tabid(Name),
+    ets:delete(TabId, Key).
+
 ets_lookup(Name, Key) ->
     TabId = ets_tabid(Name),
     ets:lookup(TabId, Key).
@@ -2714,6 +2729,20 @@ integer_to_tvar(X) when X < 26 ->
 integer_to_tvar(X) ->
     [integer_to_tvar(X div 26)] ++ [$a + (X rem 26)].
 
+%% Warnings (Unused includes)
+
+create_unused_includes() ->
+    ets_new(unused_includes, [set]).
+
+unused_include(File) ->
+    ets_insert(unused_includes, {File}).
+
+used_include(File) ->
+    ets_delete(unused_includes, File).
+
+destroy_and_report_unused_includes() ->
+    Unused = ets_tab2list(unused_includes),
+    Unused.
 
 %% Save unification failures for error messages.
 
