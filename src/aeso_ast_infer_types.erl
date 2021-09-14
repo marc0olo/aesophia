@@ -806,8 +806,10 @@ infer(Contracts, Options) ->
         Contracts1 = identify_main_contract(Contracts, Options),
         destroy_and_report_type_errors(Env),
         create_unused_includes(),
+        create_unused_stateful(),
         {Env1, Decls} = infer1(Env, Contracts1, [], Options),
         destroy_and_report_unused_includes(),
+        destroy_and_report_unused_stateful(),
         {Env2, DeclsFolded, DeclsUnfolded} =
             case proplists:get_value(dont_unfold, Options, false) of
                 true  -> {Env1, Decls, Decls};
@@ -1356,6 +1358,10 @@ infer_letrec(Env, Defs) ->
     {TypeSigs, NewDefs}.
 
 infer_letfun(Env, {fun_clauses, Ann, Fun = {id, _, Name}, Type, Clauses}) ->
+    case aeso_syntax:get_ann(stateful, Ann, false) of
+        false -> false;
+        true  -> unused_stateful(Fun)
+    end,
     Type1 = check_type(Env, Type),
     {NameSigs, Clauses1} = lists:unzip([ infer_letfun1(Env, Clause) || Clause <- Clauses ]),
     {_, Sigs = [Sig | _]} = lists:unzip(NameSigs),
@@ -1365,6 +1371,10 @@ infer_letfun(Env, {fun_clauses, Ann, Fun = {id, _, Name}, Type, Clauses}) ->
           end || ClauseSig <- Sigs ],
     {{Name, Sig}, desugar_clauses(Ann, Fun, Sig, Clauses1)};
 infer_letfun(Env, LetFun = {letfun, Ann, Fun, _, _, _}) ->
+    case aeso_syntax:get_ann(stateful, Ann, false) of
+        false -> false;
+        true  -> unused_stateful(Fun)
+    end,
     {{Name, Sig}, Clause} = infer_letfun1(Env, LetFun),
     {{Name, Sig}, desugar_clauses(Ann, Fun, Sig, [Clause])}.
 
@@ -1442,7 +1452,9 @@ check_stateful(#env{ stateful = false, current_function = Fun }, Id, Type = {typ
         true  ->
             type_error({stateful_not_allowed, Id, Fun})
     end;
-check_stateful(_Env, _Id, _Type) -> ok.
+check_stateful(#env { current_function = Fun }, _Id, _Type) ->
+    used_stateful(Fun),
+    ok.
 
 %% Hack: don't allow passing the 'value' named arg if not stateful. This only
 %% works since the user can't create functions with named arguments.
@@ -2742,6 +2754,21 @@ used_include(File) ->
 
 destroy_and_report_unused_includes() ->
     Unused = ets_tab2list(unused_includes),
+    Unused.
+
+%% Warnings (Unused stateful)
+
+create_unused_stateful() ->
+    ets_new(unused_stateful, [set]).
+
+unused_stateful(Fun) ->
+    ets_insert(unused_stateful, {Fun}).
+
+used_stateful(Fun) ->
+    ets_delete(unused_stateful, Fun).
+
+destroy_and_report_unused_stateful() ->
+    Unused = ets_tab2list(unused_stateful),
     Unused.
 
 %% Save unification failures for error messages.
