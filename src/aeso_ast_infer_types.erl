@@ -807,9 +807,11 @@ infer(Contracts, Options) ->
         destroy_and_report_type_errors(Env),
         create_unused_includes(),
         create_unused_stateful(),
+        create_unused_functions(),
         {Env1, Decls} = infer1(Env, Contracts1, [], Options),
         destroy_and_report_unused_includes(),
         destroy_and_report_unused_stateful(),
+        destroy_and_report_unused_functions(),
         {Env2, DeclsFolded, DeclsUnfolded} =
             case proplists:get_value(dont_unfold, Options, false) of
                 true  -> {Env1, Decls, Decls};
@@ -1357,11 +1359,12 @@ infer_letrec(Env, Defs) ->
     [print_typesig(S) || S <- TypeSigs],
     {TypeSigs, NewDefs}.
 
-infer_letfun(Env, {fun_clauses, Ann, Fun = {id, _, Name}, Type, Clauses}) ->
+infer_letfun(Env = #env{ namespace = Namespace }, {fun_clauses, Ann, Fun = {id, _, Name}, Type, Clauses}) ->
     case aeso_syntax:get_ann(stateful, Ann, false) of
         false -> false;
         true  -> unused_stateful(Fun)
     end,
+    register_unused_function(Namespace ++ qname(Fun), Fun, aeso_syntax:get_ann(entrypoint, Ann, false)),
     Type1 = check_type(Env, Type),
     {NameSigs, Clauses1} = lists:unzip([ infer_letfun1(Env, Clause) || Clause <- Clauses ]),
     {_, Sigs = [Sig | _]} = lists:unzip(NameSigs),
@@ -1370,11 +1373,12 @@ infer_letfun(Env, {fun_clauses, Ann, Fun = {id, _, Name}, Type, Clauses}) ->
             unify(Env, ClauseT, Type1, {check_typesig, Name, ClauseT, Type1})
           end || ClauseSig <- Sigs ],
     {{Name, Sig}, desugar_clauses(Ann, Fun, Sig, Clauses1)};
-infer_letfun(Env, LetFun = {letfun, Ann, Fun, _, _, _}) ->
+infer_letfun(Env = #env{ namespace = Namespace }, LetFun = {letfun, Ann, Fun, _, _, _}) ->
     case aeso_syntax:get_ann(stateful, Ann, false) of
         false -> false;
         true  -> unused_stateful(Fun)
     end,
+    register_unused_function(Namespace ++ qname(Fun), Fun, aeso_syntax:get_ann(entrypoint, Ann, false)),
     {{Name, Sig}, Clause} = infer_letfun1(Env, LetFun),
     {{Name, Sig}, desugar_clauses(Ann, Fun, Sig, [Clause])}.
 
@@ -1612,15 +1616,18 @@ infer_expr(Env, {app, Ann, Fun, Args0} = App) ->
         prefix ->
             infer_op(Env, Ann, Fun, Args, fun infer_prefix/1);
         _ ->
+            CurrentFun = Env#env.current_function,
+            Namespace = Env#env.namespace,
             NamedArgsVar = fresh_uvar(Ann),
             NamedArgs1 = [ infer_named_arg(Env, NamedArgsVar, Arg) || Arg <- NamedArgs ],
             NewFun0 = infer_expr(Env, Fun),
             NewArgs = [infer_expr(Env, A) || A <- Args],
             ArgTypes = [T || {typed, _, _, T} <- NewArgs],
-            NewFun1 = {typed, _, _, FunType} = infer_var_args_fun(Env, NewFun0, NamedArgs1, ArgTypes),
+            NewFun1 = {typed, _, Name, FunType} = infer_var_args_fun(Env, NewFun0, NamedArgs1, ArgTypes),
             When = {infer_app, Fun, NamedArgs1, Args, FunType, ArgTypes},
             GeneralResultType = fresh_uvar(Ann),
             ResultType = fresh_uvar(Ann),
+            register_function_call(Namespace ++ qname(CurrentFun), qname(Name)),
             unify(Env, FunType, {fun_t, [], NamedArgsVar, ArgTypes, GeneralResultType}, When),
             add_named_argument_constraint(
               #dependent_type_constraint{ named_args_t = NamedArgsVar,
@@ -2769,6 +2776,39 @@ used_stateful(Fun) ->
 
 destroy_and_report_unused_stateful() ->
     Unused = ets_tab2list(unused_stateful),
+    Unused.
+
+%% Warnings (Unused functions)
+
+create_unused_functions() ->
+    ets_new(function_calls, [bag]),
+    ets_new(unused_functions, [set]).
+
+register_function_call(Caller, Callee) ->
+    ets_insert(function_calls, {Caller, Callee}).
+
+register_unused_function(FunQName, FunId, IsEntrypoint) ->
+    ets_insert(unused_functions, {FunQName, FunId, IsEntrypoint}).
+
+remove_used_funs(All) ->
+    {Used, Unused} = lists:partition(fun({_, _, IsUsed}) -> IsUsed end, All),
+    CallsByUsed = lists:flatmap(fun({F, _, _}) -> ets_lookup(function_calls, F) end, Used),
+    CalledFuns = sets:from_list(lists:map(fun({_, Callee}) -> Callee end, CallsByUsed)),
+    MarkUsedFun = fun(Fun, Acc) ->
+                      case lists:keyfind(Fun, 1, Acc) of
+                          false -> Acc;
+                          T     -> lists:keyreplace(Fun, 1, Acc, setelement(3, T, true))
+                      end
+                  end,
+    NewUnused = sets:fold(MarkUsedFun, Unused, CalledFuns),
+    case lists:keyfind(true, 3, NewUnused) of
+        false -> NewUnused;
+        _     -> remove_used_funs(NewUnused)
+    end.
+
+destroy_and_report_unused_functions() ->
+    AllFuns = ets_tab2list(unused_functions),
+    Unused = lists:map(fun({_, FunId, _}) -> FunId end, remove_used_funs(AllFuns)),
     Unused.
 
 %% Save unification failures for error messages.
