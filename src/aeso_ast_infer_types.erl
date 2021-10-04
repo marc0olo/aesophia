@@ -170,7 +170,11 @@ on_scopes(Env = #env{ scopes = Scopes }, Fun) ->
     Env#env{ scopes = maps:map(fun(_, Scope) -> Fun(Scope) end, Scopes) }.
 
 -spec bind_var(aeso_syntax:id(), utype(), env()) -> env().
-bind_var({id, Ann, X}, T, Env) ->
+bind_var({id, Ann, X}, T, Env = #env{ vars = Vars }) ->
+    case proplists:get_value(X, Vars, false) of
+        false -> ok;
+        AnnOld -> shadowing(X, Ann, AnnOld)
+    end,
     Env#env{ vars = [{X, {Ann, T}} | Env#env.vars] }.
 
 -spec bind_vars([{aeso_syntax:id(), utype()}], env()) -> env().
@@ -808,10 +812,12 @@ infer(Contracts, Options) ->
         create_unused_includes(),
         create_unused_stateful(),
         create_unused_functions(),
+        create_shadowing(),
         {Env1, Decls} = infer1(Env, Contracts1, [], Options),
         destroy_and_report_unused_includes(),
         destroy_and_report_unused_stateful(),
         destroy_and_report_unused_functions(),
+        destroy_and_report_shadowing(),
         {Env2, DeclsFolded, DeclsUnfolded} =
             case proplists:get_value(dont_unfold, Options, false) of
                 true  -> {Env1, Decls, Decls};
@@ -2810,6 +2816,18 @@ destroy_and_report_unused_functions() ->
     AllFuns = ets_tab2list(unused_functions),
     Unused = lists:map(fun({_, FunId, _}) -> FunId end, remove_used_funs(AllFuns)),
     Unused.
+
+%% Warnings (Shadowing)
+
+create_shadowing() ->
+    ets_new(shadowing, [set]).
+
+shadowing(Name, AnnNew, AnnOld) ->
+    ets_insert(shadowing, {Name, AnnNew, AnnOld}).
+
+destroy_and_report_shadowing() ->
+    Shadowed = ets_tab2list(shadowing),
+    Shadowed.
 
 %% Save unification failures for error messages.
 
