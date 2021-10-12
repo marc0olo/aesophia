@@ -813,11 +813,13 @@ infer(Contracts, Options) ->
         create_unused_stateful(),
         create_unused_functions(),
         create_shadowing(),
+        create_division_by_zero(),
         {Env1, Decls} = infer1(Env, Contracts1, [], Options),
         destroy_and_report_unused_includes(),
         destroy_and_report_unused_stateful(),
         destroy_and_report_unused_functions(),
         destroy_and_report_shadowing(),
+        destroy_and_report_division_by_zero(),
         {Env2, DeclsFolded, DeclsUnfolded} =
             case proplists:get_value(dont_unfold, Options, false) of
                 true  -> {Env1, Decls, Decls};
@@ -1859,6 +1861,10 @@ infer_op(Env, As, Op, Args, InferOp) ->
     ArgTypes = [T || {typed, _, _, T} <- TypedArgs],
     Inferred = {fun_t, _, _, OperandTypes, ResultType} = InferOp(Op),
     unify(Env, ArgTypes, OperandTypes, {infer_app, Op, [], Args, Inferred, ArgTypes}),
+    case {Op, Args} of
+        {{'/', _}, [_, {int, _, 0}]} -> division_by_zero(As);
+        _ -> false
+    end,
     {typed, As, {app, As, Op, TypedArgs}, ResultType}.
 
 infer_pattern(Env, Pattern) ->
@@ -2828,6 +2834,18 @@ shadowing(Name, AnnNew, AnnOld) ->
 destroy_and_report_shadowing() ->
     Shadowed = ets_tab2list(shadowing),
     Shadowed.
+
+%% Warnings (Division by zero)
+
+create_division_by_zero() ->
+    ets_new(division_by_zero, [set]).
+
+division_by_zero(Ann) ->
+    ets_insert(division_by_zero, {Ann}).
+
+destroy_and_report_division_by_zero() ->
+    DivisionByZero = ets_tab2list(division_by_zero),
+    DivisionByZero.
 
 %% Save unification failures for error messages.
 
