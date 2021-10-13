@@ -814,12 +814,14 @@ infer(Contracts, Options) ->
         create_unused_functions(),
         create_shadowing(),
         create_division_by_zero(),
+        create_negative_spends(),
         {Env1, Decls} = infer1(Env, Contracts1, [], Options),
         destroy_and_report_unused_includes(),
         destroy_and_report_unused_stateful(),
         destroy_and_report_unused_functions(),
         destroy_and_report_shadowing(),
         destroy_and_report_division_by_zero(),
+        destroy_and_report_negative_spends(),
         {Env2, DeclsFolded, DeclsUnfolded} =
             case proplists:get_value(dont_unfold, Options, false) of
                 true  -> {Env1, Decls, Decls};
@@ -1637,6 +1639,12 @@ infer_expr(Env, {app, Ann, Fun, Args0} = App) ->
             ResultType = fresh_uvar(Ann),
             register_function_call(Namespace ++ qname(CurrentFun), qname(Name)),
             unify(Env, FunType, {fun_t, [], NamedArgsVar, ArgTypes, GeneralResultType}, When),
+            case {NewFun1, NewArgs} of
+                { {typed, _, {qid, _, ["Chain", "spend"]}, _}
+                , [_, {typed, _, {app, _, {'-', _}, [{typed, _, {int, _, X}, _}]}, _}]} when X > 0 ->
+                    negative_spend(Ann);
+                _ -> false
+            end,
             add_named_argument_constraint(
               #dependent_type_constraint{ named_args_t = NamedArgsVar,
                                           named_args   = NamedArgs1,
@@ -2846,6 +2854,18 @@ division_by_zero(Ann) ->
 destroy_and_report_division_by_zero() ->
     DivisionByZero = ets_tab2list(division_by_zero),
     DivisionByZero.
+
+%% Warnings (Negative spends)
+
+create_negative_spends() ->
+    ets_new(negative_spends, [set]).
+
+negative_spend(Ann) ->
+    ets_insert(negative_spends, {Ann}).
+
+destroy_and_report_negative_spends() ->
+    NegativeSpends = ets_tab2list(negative_spends),
+    NegativeSpends.
 
 %% Save unification failures for error messages.
 
