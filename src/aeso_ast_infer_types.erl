@@ -2809,7 +2809,7 @@ destroy_and_report_unused_stateful() ->
 %% Warnings (Unused variables)
 
 create_unused_variables() ->
-    ets_new(unused_variables, [bag]).
+    ets_new(unused_variables, [set]).
 
 unused_variable({id, Ann, VarName}) ->
     ets_insert(unused_variables, {VarName, Ann}).
