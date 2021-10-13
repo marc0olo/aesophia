@@ -1397,6 +1397,7 @@ infer_letfun1(Env0, {letfun, Attrib, Fun = {id, NameAttrib, Name}, Args, What, B
                     current_function = Fun },
     create_unused_variables(),
     {NewEnv, {typed, _, {tuple, _, TypedArgs}, {tuple_t, _, ArgTypes}}} = infer_pattern(Env, {tuple, [{origin, system} | NameAttrib], Args}),
+    lists:map(fun unused_variable/1, free_vars(Args)),
     ExpectedType = check_type(Env, arg_type(NameAttrib, What)),
     NewBody={typed, _, _, ResultType} = check_expr(NewEnv, Body, ExpectedType),
     destroy_and_report_unused_variables(),
