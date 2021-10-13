@@ -1395,9 +1395,11 @@ infer_letfun(Env = #env{ namespace = Namespace }, LetFun = {letfun, Ann, Fun, _,
 infer_letfun1(Env0, {letfun, Attrib, Fun = {id, NameAttrib, Name}, Args, What, Body}) ->
     Env = Env0#env{ stateful = aeso_syntax:get_ann(stateful, Attrib, false),
                     current_function = Fun },
+    create_unused_variables(),
     {NewEnv, {typed, _, {tuple, _, TypedArgs}, {tuple_t, _, ArgTypes}}} = infer_pattern(Env, {tuple, [{origin, system} | NameAttrib], Args}),
     ExpectedType = check_type(Env, arg_type(NameAttrib, What)),
     NewBody={typed, _, _, ResultType} = check_expr(NewEnv, Body, ExpectedType),
+    destroy_and_report_unused_variables(),
     NamedArgs = [],
     TypeSig = {type_sig, Attrib, none, NamedArgs, ArgTypes, ResultType},
     {{Name, TypeSig},
@@ -1450,6 +1452,10 @@ lookup_name(Env, As, Id, Options) ->
             type_error({unbound_variable, Id}),
             {Id, fresh_uvar(As)};
         {QId, {_, Ty}} ->
+            case QId of
+                [VarName] -> used_variable(VarName);
+                _ -> false
+            end,
             Freshen = proplists:get_value(freshen, Options, false),
             check_stateful(Env, Id, Ty),
             Ty1 = case Ty of
@@ -1888,6 +1894,7 @@ infer_pattern(Env, Pattern) ->
 
 infer_case(Env, Attrs, Pattern, ExprType, Branch, SwitchType) ->
     {NewEnv, NewPattern = {typed, _, _, PatType}} = infer_pattern(Env, Pattern),
+    lists:map(fun unused_variable/1, free_vars(Pattern)),
     NewBranch  = check_expr(NewEnv#env{ in_pattern = false }, Branch, SwitchType),
     unify(Env, PatType, ExprType, {case_pat, Pattern, PatType, ExprType}),
     {'case', Attrs, NewPattern, NewBranch}.
@@ -2796,6 +2803,22 @@ used_stateful(Fun) ->
 
 destroy_and_report_unused_stateful() ->
     Unused = ets_tab2list(unused_stateful),
+    Unused.
+
+%% Warnings (Unused variables)
+
+create_unused_variables() ->
+    ets_new(unused_variables, [bag]).
+
+unused_variable({id, Ann, VarName}) ->
+    ets_insert(unused_variables, {VarName, Ann}).
+
+used_variable(VarName) ->
+    ets_delete(unused_variables, VarName).
+
+destroy_and_report_unused_variables() ->
+    Unused = ets_tab2list(unused_variables),
+    ets_delete(unused_variables),
     Unused.
 
 %% Warnings (Unused functions)
