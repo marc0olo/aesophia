@@ -812,6 +812,7 @@ infer(Contracts, Options) ->
         create_unused_includes(),
         create_unused_stateful(),
         create_unused_functions(),
+        create_unused_typedefs(),
         create_shadowing(),
         create_division_by_zero(),
         create_negative_spends(),
@@ -819,6 +820,7 @@ infer(Contracts, Options) ->
         destroy_and_report_unused_includes(),
         destroy_and_report_unused_stateful(),
         destroy_and_report_unused_functions(),
+        destroy_and_report_unused_typedefs(),
         destroy_and_report_shadowing(),
         destroy_and_report_division_by_zero(),
         destroy_and_report_negative_spends(),
@@ -931,6 +933,7 @@ infer_contract(Env0, What, Defs0, Options) ->
     OldUsedNamespaces = Env#env.used_namespaces,
     Env01 = check_usings(Env, Get(using, Defs)),
     {Env1, TypeDefs} = check_typedefs(Env01, Get(type, Defs)),
+    lists:map(fun(TypeDef) -> unused_typedef(Env#env.namespace, TypeDef) end, TypeDefs),
     create_type_errors(),
     check_unexpected(Get(unexpected, Defs)),
     Env2 =
@@ -2504,6 +2507,7 @@ unfold_types_in_type(Env, {app_t, Ann, Id = {id, _, "map"}, Args = [KeyType0, _]
     [ type_error({map_in_map_key, Ann1, KeyType0}) || has_maps(KeyType) ],
     {app_t, Ann, Id, Args1};
 unfold_types_in_type(Env, {app_t, Ann, Id, Args}, Options) when ?is_type_id(Id) ->
+    used_typedef(Id, length(Args)),
     UnfoldRecords  = proplists:get_value(unfold_record_types, Options, false),
     UnfoldVariants = proplists:get_value(unfold_variant_types, Options, false),
     case lookup_type(Env, Id) of
@@ -2524,6 +2528,7 @@ unfold_types_in_type(Env, {app_t, Ann, Id, Args}, Options) when ?is_type_id(Id) 
     end;
 unfold_types_in_type(Env, Id, Options) when ?is_type_id(Id) ->
     %% Like the case above, but for types without parameters.
+    used_typedef(Id, 0),
     UnfoldRecords = proplists:get_value(unfold_record_types, Options, false),
     UnfoldVariants = proplists:get_value(unfold_variant_types, Options, false),
     case lookup_type(Env, Id) of
@@ -2804,6 +2809,21 @@ used_stateful(Fun) ->
 
 destroy_and_report_unused_stateful() ->
     Unused = ets_tab2list(unused_stateful),
+    Unused.
+
+%% Warnings (Unused type defs)
+
+create_unused_typedefs() ->
+    ets_new(unused_typedefs, [set]).
+
+unused_typedef(Namespace, {type_def, Ann, Id, Args, _}) ->
+    ets_insert(unused_typedefs, {{Namespace ++ qname(Id), length(Args)}, Ann}).
+
+used_typedef(TypeAliasId, Arity) ->
+    ets_delete(unused_typedefs, {qname(TypeAliasId), Arity}).
+
+destroy_and_report_unused_typedefs() ->
+    Unused = ets_tab2list(unused_typedefs),
     Unused.
 
 %% Warnings (Unused variables)
