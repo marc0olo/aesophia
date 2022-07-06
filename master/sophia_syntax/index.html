@@ -9,8 +9,8 @@
       
       
       
-      <link rel="icon" href="favicon.png">
-      <meta name="generator" content="mkdocs-1.2.1, mkdocs-material-7.1.9">
+      <link rel="icon" href="../favicon.png">
+      <meta name="generator" content="mkdocs-1.2.4, mkdocs-material-7.1.9">
     
     
       
@@ -18,10 +18,10 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.ca7ac06f.min.css">
+      <link rel="stylesheet" href="../assets/stylesheets/main.ca7ac06f.min.css">
       
         
-        <link rel="stylesheet" href="assets/stylesheets/palette.f1a3b89f.min.css">
+        <link rel="stylesheet" href="../assets/stylesheets/palette.f1a3b89f.min.css">
         
       
     
@@ -55,7 +55,7 @@
     <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="pink" data-md-color-accent="pink">
   
     
-    <script>function __prefix(e){return new URL(".",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
+    <script>function __prefix(e){return new URL("..",location).pathname+"."+e}function __get(e,t=localStorage){return JSON.parse(t.getItem(__prefix(e)))}</script>
     
       <script>var palette=__get("__palette");if(null!==palette&&"object"==typeof palette.color)for(var key in palette.color)document.body.setAttribute("data-md-color-"+key,palette.color[key])</script>
     
@@ -76,7 +76,7 @@
     
       <header class="md-header" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="index.html" title="æternity Sophia Language" class="md-header__button md-logo" aria-label="æternity Sophia Language" data-md-component="logo">
+    <a href=".." title="æternity Sophia Language" class="md-header__button md-logo" aria-label="æternity Sophia Language" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
@@ -191,7 +191,7 @@
 
 <nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="index.html" title="æternity Sophia Language" class="md-nav__button md-logo" aria-label="æternity Sophia Language" data-md-component="logo">
+    <a href=".." title="æternity Sophia Language" class="md-nav__button md-logo" aria-label="æternity Sophia Language" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54z"/></svg>
@@ -223,7 +223,7 @@
   
   
     <li class="md-nav__item">
-      <a href="index.html" class="md-nav__link">
+      <a href=".." class="md-nav__link">
         Introduction
       </a>
     </li>
@@ -252,7 +252,7 @@
           <span class="md-nav__icon md-icon"></span>
         </label>
       
-      <a href="sophia_syntax.html" class="md-nav__link md-nav__link--active">
+      <a href="./" class="md-nav__link md-nav__link--active">
         Syntax
       </a>
       
@@ -376,7 +376,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sophia_features.html" class="md-nav__link">
+      <a href="../sophia_features/" class="md-nav__link">
         Features
       </a>
     </li>
@@ -391,7 +391,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sophia_stdlib.html" class="md-nav__link">
+      <a href="../sophia_stdlib/" class="md-nav__link">
         Standard library
       </a>
     </li>
@@ -406,7 +406,7 @@
   
   
     <li class="md-nav__item">
-      <a href="sophia_examples.html" class="md-nav__link">
+      <a href="../sophia_examples/" class="md-nav__link">
         Contract examples
       </a>
     </li>
@@ -421,7 +421,7 @@
   
   
     <li class="md-nav__item">
-      <a href="CHANGELOG.html" class="md-nav__link">
+      <a href="../CHANGELOG/" class="md-nav__link">
         Changelog
       </a>
     </li>
@@ -642,12 +642,12 @@ indented more than the currently enclosing layout block. Blocks with a single
 element can be written on the same line as the previous token.</p>
 <p>Each element of the block must share the same indentation and no part of an
 element may be indented less than the indentation of the block. For instance</p>
-<div class="highlight"><pre><span></span><code>contract Layout =
-  function foo() = 0  // no layout
-  function bar() =    // layout block starts on next line
-    let x = foo()     // indented more than 2 spaces
-    x
-     + 1              // the &#39;+&#39; is indented more than the &#39;x&#39;
+<div class="highlight"><pre><span></span><code><span class="k">contract</span><span class="w"> </span><span class="nf">Layout</span><span class="w"> </span><span class="ow">=</span><span class="w"></span>
+<span class="w">  </span><span class="k">function</span><span class="w"> </span><span class="n">foo</span><span class="p">()</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">0</span><span class="w">  </span><span class="c1">// no layout</span>
+<span class="w">  </span><span class="k">function</span><span class="w"> </span><span class="n">bar</span><span class="p">()</span><span class="w"> </span><span class="ow">=</span><span class="w">    </span><span class="c1">// layout block starts on next line</span>
+<span class="w">    </span><span class="k">let</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">foo</span><span class="p">()</span><span class="w">     </span><span class="c1">// indented more than 2 spaces</span>
+<span class="w">    </span><span class="n">x</span><span class="w"></span>
+<span class="w">     </span><span class="ow">+</span><span class="w"> </span><span class="mi">1</span><span class="w">              </span><span class="c1">// the &#39;+&#39; is indented more than the &#39;x&#39;</span>
 </code></pre></div>
 <h2 id="notation">Notation</h2>
 <p>In describing the syntax below, we use the following conventions:</p>
@@ -692,9 +692,9 @@ element may be indented less than the indentation of the block. For instance</p>
 </code></pre></div>
 <p>Contract declarations must appear at the top-level.</p>
 <p>For example,
-<div class="highlight"><pre><span></span><code>contract Test =
-  type t = int
-  entrypoint add (x : t, y : t) = x + y
+<div class="highlight"><pre><span></span><code><span class="k">contract</span><span class="w"> </span><span class="nf">Test</span><span class="w"> </span><span class="ow">=</span><span class="w"></span>
+<span class="w">  </span><span class="k">type</span><span class="w"> </span><span class="n">t</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="kt">int</span><span class="w"></span>
+<span class="w">  </span><span class="k">entrypoint</span><span class="w"> </span><span class="n">add</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="n">t</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="n">t</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">+</span><span class="w"> </span><span class="n">y</span><span class="w"></span>
 </code></pre></div></p>
 <p>There are three forms of type declarations: type aliases (declared with the
 <code>type</code> keyword), record type definitions (<code>record</code>) and data type definitions
@@ -707,9 +707,9 @@ element may be indented less than the indentation of the block. For instance</p>
 <span class="n">ConDecl</span><span class="w">    </span><span class="o">::=</span><span class="w"> </span><span class="n">Con</span><span class="w"> </span><span class="p">[</span><span class="sc">&#39;(&#39;</span><span class="w"> </span><span class="n">Sep1</span><span class="p">(</span><span class="n">Type</span><span class="p">,</span><span class="w"> </span><span class="sc">&#39;,&#39;</span><span class="p">)</span><span class="w"> </span><span class="sc">&#39;)&#39;</span><span class="p">]</span><span class="w"></span>
 </code></pre></div>
 <p>For example,
-<div class="highlight"><pre><span></span><code>record   point(&#39;a) = {x : &#39;a, y : &#39;a}
-datatype shape(&#39;a) = Circle(point(&#39;a), &#39;a) | Rect(point(&#39;a), point(&#39;a))
-type     int_shape = shape(int)
+<div class="highlight"><pre><span></span><code><span class="k">record</span><span class="w">   </span><span class="n">point</span><span class="p">(</span><span class="nv">&#39;a</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="p">{</span><span class="n">x</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="nv">&#39;a</span><span class="p">,</span><span class="w"> </span><span class="n">y</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="nv">&#39;a</span><span class="p">}</span><span class="w"></span>
+<span class="k">datatype</span><span class="w"> </span><span class="n">shape</span><span class="p">(</span><span class="nv">&#39;a</span><span class="p">)</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="nf">Circle</span><span class="p">(</span><span class="n">point</span><span class="p">(</span><span class="nv">&#39;a</span><span class="p">),</span><span class="w"> </span><span class="nv">&#39;a</span><span class="p">)</span><span class="w"> </span><span class="ow">|</span><span class="w"> </span><span class="nf">Rect</span><span class="p">(</span><span class="n">point</span><span class="p">(</span><span class="nv">&#39;a</span><span class="p">),</span><span class="w"> </span><span class="n">point</span><span class="p">(</span><span class="nv">&#39;a</span><span class="p">))</span><span class="w"></span>
+<span class="k">type</span><span class="w">     </span><span class="n">int_shape</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="n">shape</span><span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="w"></span>
 </code></pre></div></p>
 <h2 id="types">Types</h2>
 <div class="highlight"><pre><span></span><code><span class="n">Type</span><span class="w"> </span><span class="o">::=</span><span class="w"> </span><span class="n">Domain</span><span class="w"> </span><span class="err">&#39;</span><span class="o">=&gt;</span><span class="err">&#39;</span><span class="w"> </span><span class="n">Type</span><span class="w">             </span><span class="c1">// Function type</span>
@@ -723,7 +723,7 @@ type     int_shape = shape(int)
 </code></pre></div>
 <p>The function type arrow associates to the right.</p>
 <p>Example,
-<div class="highlight"><pre><span></span><code>&#39;a =&gt; list(&#39;a) =&gt; (int * list(&#39;a))
+<div class="highlight"><pre><span></span><code><span class="nv">&#39;a</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="kt">list</span><span class="p">(</span><span class="nv">&#39;a</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="p">(</span><span class="kt">int</span><span class="w"> </span><span class="ow">*</span><span class="w"> </span><span class="kt">list</span><span class="p">(</span><span class="nv">&#39;a</span><span class="p">))</span><span class="w"></span>
 </code></pre></div></p>
 <h2 id="statements">Statements</h2>
 <p>Function bodies are blocks of <em>statements</em>, where a statement is one of the following</p>
@@ -741,19 +741,20 @@ type     int_shape = shape(int)
 <span class="n">Pattern</span><span class="w"> </span><span class="o">::=</span><span class="w"> </span><span class="n">Expr</span><span class="w"></span>
 </code></pre></div>
 <p><code>if</code> statements can be followed by zero or more <code>elif</code> statements and an optional final <code>else</code> statement. For example,</p>
-<div class="highlight"><pre><span></span><code>let x : int = 4
-switch(f(x))
-  None =&gt; 0
-  Some(y) =&gt;
-    if(y &gt; 10)
-      &quot;too big&quot;
-    elif(y &lt; 3)
-      &quot;too small&quot;
-    else
-      &quot;just right&quot;
+<div class="highlight"><pre><span></span><code><span class="k">let</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="ow">:</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="ow">=</span><span class="w"> </span><span class="mi">4</span><span class="w"></span>
+<span class="k">switch</span><span class="p">(</span><span class="n">f</span><span class="p">(</span><span class="n">x</span><span class="p">))</span><span class="w"></span>
+<span class="w">  </span><span class="nf">None</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"> </span><span class="mi">0</span><span class="w"></span>
+<span class="w">  </span><span class="nf">Some</span><span class="p">(</span><span class="n">y</span><span class="p">)</span><span class="w"> </span><span class="ow">=&gt;</span><span class="w"></span>
+<span class="w">    </span><span class="k">if</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="ow">&gt;</span><span class="w"> </span><span class="mi">10</span><span class="p">)</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;too big&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="k">elif</span><span class="p">(</span><span class="n">y</span><span class="w"> </span><span class="ow">&lt;</span><span class="w"> </span><span class="mi">3</span><span class="p">)</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;too small&quot;</span><span class="w"></span>
+<span class="w">    </span><span class="k">else</span><span class="w"></span>
+<span class="w">      </span><span class="s2">&quot;just right&quot;</span><span class="w"></span>
 </code></pre></div>
 <h2 id="expressions">Expressions</h2>
 <div class="highlight"><pre><span></span><code><span class="n">Expr</span><span class="w"> </span><span class="o">::=</span><span class="w"> </span><span class="sc">&#39;(&#39;</span><span class="w"> </span><span class="n">LamArgs</span><span class="w"> </span><span class="sc">&#39;)&#39;</span><span class="w"> </span><span class="err">&#39;</span><span class="o">=&gt;</span><span class="err">&#39;</span><span class="w"> </span><span class="n">Block</span><span class="p">(</span><span class="n">Stmt</span><span class="p">)</span><span class="w">   </span><span class="c1">// Anonymous function    (x) =&gt; x + 1</span>
+<span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="sc">&#39;(&#39;</span><span class="w"> </span><span class="n">BinOp</span><span class="w"> </span><span class="sc">&#39;)&#39;</span><span class="w">                      </span><span class="c1">// Operator lambda       (+)</span>
 <span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="err">&#39;</span><span class="k">if</span><span class="sc">&#39; &#39;</span><span class="p">(</span><span class="err">&#39;</span><span class="w"> </span><span class="n">Expr</span><span class="w"> </span><span class="sc">&#39;)&#39;</span><span class="w"> </span><span class="n">Expr</span><span class="w"> </span><span class="err">&#39;</span><span class="k">else</span><span class="err">&#39;</span><span class="w"> </span><span class="n">Expr</span><span class="w"> </span><span class="c1">// If expression         if(x &lt; y) y else x</span>
 <span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">Expr</span><span class="w"> </span><span class="sc">&#39;:&#39;</span><span class="w"> </span><span class="n">Type</span><span class="w">                      </span><span class="c1">// Type annotation       5 : int</span>
 <span class="w">       </span><span class="o">|</span><span class="w"> </span><span class="n">Expr</span><span class="w"> </span><span class="n">BinOp</span><span class="w"> </span><span class="n">Expr</span><span class="w">                    </span><span class="c1">// Binary operator       x + y</span>
@@ -788,6 +789,7 @@ switch(f(x))
 
 <span class="n">BinOp</span><span class="w"> </span><span class="o">::=</span><span class="w"> </span><span class="err">&#39;</span><span class="o">||</span><span class="err">&#39;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="err">&#39;</span><span class="o">&amp;&amp;</span><span class="err">&#39;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="sc">&#39;&lt;&#39;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="sc">&#39;&gt;&#39;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="err">&#39;</span><span class="o">=&lt;</span><span class="err">&#39;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="err">&#39;</span><span class="o">&gt;=</span><span class="err">&#39;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="err">&#39;</span><span class="o">==</span><span class="err">&#39;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="err">&#39;</span><span class="o">!=</span><span class="err">&#39;</span><span class="w"></span>
 <span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="err">&#39;</span><span class="o">::</span><span class="err">&#39;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="err">&#39;</span><span class="o">++</span><span class="err">&#39;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="sc">&#39;+&#39;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="sc">&#39;-&#39;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="sc">&#39;*&#39;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="sc">&#39;/&#39;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="err">&#39;</span><span class="n">mod</span><span class="err">&#39;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="sc">&#39;^&#39;</span><span class="w"></span>
+<span class="w">        </span><span class="o">|</span><span class="w"> </span><span class="err">&#39;</span><span class="o">|&gt;</span><span class="err">&#39;</span><span class="w"></span>
 <span class="n">UnOp</span><span class="w">  </span><span class="o">::=</span><span class="w"> </span><span class="sc">&#39;-&#39;</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="sc">&#39;!&#39;</span><span class="w"></span>
 </code></pre></div>
 <h2 id="operators-types">Operators types</h2>
@@ -814,6 +816,10 @@ switch(f(x))
 <tr>
 <td><code>::</code> <code>++</code></td>
 <td>list operators</td>
+</tr>
+<tr>
+<td><code>\|&gt;</code></td>
+<td>functional operators</td>
 </tr>
 </tbody>
 </table>
@@ -863,6 +869,10 @@ switch(f(x))
 <td><code>\|\|</code></td>
 <td>right</td>
 </tr>
+<tr>
+<td><code>\|&gt;</code></td>
+<td>left</td>
+</tr>
 </tbody>
 </table>
                 
@@ -884,7 +894,7 @@ switch(f(x))
     <nav class="md-footer__inner md-grid" aria-label="Footer">
       
         
-        <a href="index.html" class="md-footer__link md-footer__link--prev" aria-label="Previous: Introduction" rel="prev">
+        <a href=".." class="md-footer__link md-footer__link--prev" aria-label="Previous: Introduction" rel="prev">
           <div class="md-footer__button md-icon">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12z"/></svg>
           </div>
@@ -900,7 +910,7 @@ switch(f(x))
       
       
         
-        <a href="sophia_features.html" class="md-footer__link md-footer__link--next" aria-label="Next: Features" rel="next">
+        <a href="../sophia_features/" class="md-footer__link md-footer__link--next" aria-label="Next: Features" rel="next">
           <div class="md-footer__title">
             <div class="md-ellipsis">
               <span class="md-footer__direction">
@@ -935,10 +945,10 @@ switch(f(x))
     <div class="md-dialog" data-md-component="dialog">
       <div class="md-dialog__inner md-typeset"></div>
     </div>
-    <script id="__config" type="application/json">{"base": ".", "features": ["content.tabs.link", "search.highlight", "search.share", "search.suggest"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "assets/javascripts/workers/search.477d984a.min.js", "version": {"provider": "mike"}}</script>
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.tabs.link", "search.highlight", "search.share", "search.suggest"], "translations": {"clipboard.copy": "Copy to clipboard", "clipboard.copied": "Copied to clipboard", "search.config.lang": "en", "search.config.pipeline": "trimmer, stopWordFilter", "search.config.separator": "[\\s\\-]+", "search.placeholder": "Search", "search.result.placeholder": "Type to start searching", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.term.missing": "Missing", "select.version.title": "Select version"}, "search": "../assets/javascripts/workers/search.477d984a.min.js", "version": {"provider": "mike"}}</script>
     
     
-      <script src="assets/javascripts/bundle.82b56eb2.min.js"></script>
+      <script src="../assets/javascripts/bundle.82b56eb2.min.js"></script>
       
     
   </body>
